@@ -1,17 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Signal processing
-
-Oscilloscope waveform processing script.
-"""
+"""Обработка осциллографических записей."""
 
 # Future
 # from __future__ import
 
 # Standard Library
 import os
-import time
 from pathlib import Path
 
 # Third-party Libraries
@@ -23,6 +18,7 @@ import matplotlib.pyplot as plt
 
 # Own sources
 from metric import metric as mt
+from service_utilities import TimeTest
 
 __author__      = "Nikita Makarchuck"
 __copyright__   = "Copyright 2021, Nikita Makarchuck"
