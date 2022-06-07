@@ -18,7 +18,18 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 # Own sources
+from exceptions import WrongCsvStructureError
 from config import cfg
+
+class WrongCsvStructureError(Exception):
+    def __init__(self, file):
+        if file:
+            self.message = f'File {file} has invalid structure.'
+        else:
+            self.message = 'Invalid csv-file structure.'
+
+    def __str__(self):
+        return(f'WrongCsvStructureError: {self.message}')
 
 
 class Opener:
@@ -34,52 +45,7 @@ class Opener:
         None.
 
         """
-        self.cfg = {
-            'Globaltest': {  # FIXME Правильное название и сигнатура
-                'signature_1ch': 'FIXME',  # FIXME Заполнить
-                'signature_2ch': 'time\t',
-                'position': (0, 5),
-                'invert': [True, True]
-                },
-            'Gydropribor': {  # FIXME Правильное название и сигнатура
-                'signature_1ch': '   ',
-                'signature_2ch': 'FIXME',  # FIXME Заполнить
-                'position': (0, 4),
-                'invert': [False, False]
-                },
-            'Micsig tBook': {
-                'signature_1ch': 'ProID,Info,,time,Vo',
-                'signature_2ch': ('ProID,Info,Unnamed: 2,time,Vol.,Unnamed: 5,'
-                                  + 'ProID,Info,Unnamed: 2,time,Vol.,Unnamed'),
-                'position': (0, -4),
-                'invert': [False, False]
-                },
-            'Rigol MSO1104Z/DS1074Z': {
-                'signature_1ch': 'X,CH1,Start,Increment',
-                'signature_2ch': 'X,CH1,CH2,Start,Increment',
-                'position': (0, -2),
-                'invert': [False, False]
-                },
-            'Rigol DS1102E': {
-                'signature_1ch': 'Time,X(CH1)',
-                'signature_2ch': 'Time,X(CH1),X(CH2)',  # !!! Снять
-                'position': (0, -2),
-                'invert': [False, False]
-                },
-            'Rigol (unknown)': {  # FIXME Что это за прибор? Узнать!
-                'signature_1ch': 'X\tCH1\tStart\tIncrement',
-                'signature_2ch': 'X\tCH1\tCH2\tStart\tIncrement',  # !!! Снять
-                'position': (0, -2),
-                'invert': [False, False]
-                },
-            'Tektronix MSO46': {
-                'signature_1ch': 'X,CH1,Start,Increment',  # !!! Снять
-                'signature_2ch': 'X,CH1,CH2,Start,Increment',
-                'position': (0, -1),
-                'invert': [True, True]
-                }
-            # TODO 'Tektronix TDS1012B', 'Tektronix TDS2012C'
-            }
+        self.cfg = cfg['devices']
 
     def read(self, file):
         """
@@ -146,7 +112,7 @@ class Opener:
                         break
                 else:
                     if recorder_device is None:
-                        raise WrongCsvStructureError(Exception)  # FIXME
+                        raise WrongCsvStructureError  # FIXME
                 data, t_step = self.extract(file, device['invert'],
                                             recorder_device, two_channels)
         except FileNotFoundError:
@@ -216,11 +182,11 @@ class Opener:
             for name in names:
                 data[name] = df[name].values*invert[num]
             data['t'] = t_start + t_step*data['t'].values
+
         elif device == 'Tektronix MSO46':
             df = pd.read_csv(file, index_col=False, names=names, skiprows=12)
             for name in names:
                 data[name] = df[name].values*invert[num]
-
         return data, t_step
 
         # TODO 'Tektronix TDS1012B', 'Tektronix TDS2012C'
