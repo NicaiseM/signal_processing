@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 class WrongCsvStructureError(Exception):
+    """Исключение неверного формата данных в csv-файле."""
+
     def __init__(self, *file):
         if file:
             file = str(file[0])
