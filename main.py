@@ -2,23 +2,21 @@
 # -*- coding: utf-8 -*-
 """Обработка осциллографических записей."""
 
+# TODO
+    # открытие файлов - доработать
+    # обработка
+    # графопостроение
+
 # Future
 # from __future__ import
 
 # Standard Library
 import os
-from pathlib import Path
 
 # Third-party Libraries
-import scipy
-import numpy as np
-import pandas as pd
-import matplotlib as mpl
-import matplotlib.pyplot as plt
 
 # Own sources
-from metric import metric as mt
-from service_utilities import TimeTest
+
 
 __author__      = "Nikita Makarchuck"
 __copyright__   = "Copyright 2021, Nikita Makarchuck"
@@ -31,9 +29,4 @@ __status__      = "Prototype|Development|Production"
 
 
 # === Processing ===
-
-# TODO
-    # открытие файлов
-    # обработка
-    # графопостроение
-
+os.system('streamlit run streamlit_ui.py')

@@ -6,37 +6,21 @@
 # from __future__ import
 
 # Standard Library
-import os
-import time
-from pathlib import Path
 
 # Third-party Libraries
-import scipy
 import numpy as np
 import pandas as pd
-import matplotlib as mpl
-import matplotlib.pyplot as plt
 
 # Own sources
-from exceptions import WrongCsvStructureError
 from config import cfg
+from exceptions import WrongCsvStructureError
 
 
+# === Classes ===
 class Opener:
-    """Класс-импортер данных из csv-файлов."""
+    """Класс - импортер данных из csv-файлов."""
 
-    def __init__(self, *args, **kwargs):
-        self.set_cfg()
-
-    def set_cfg(self):
-        """
-        Создание поля с сигнатурами записей различных приборов.
-
-        Returns
-        -------
-        None.
-
-        """
+    def __init__(self):
         self.cfg = cfg['devices']
 
     def read(self, file):
@@ -56,8 +40,8 @@ class Opener:
             Шаг времени между выборками.
         recorder_device : str
             Название прибора, записавшего файл.
-        two_channels : bool
-            Наличие двухканальной записи в файле.
+        ch_num : bool
+            Число каналов в файле.
 
         Notes
         -----
@@ -82,30 +66,31 @@ class Opener:
 
         """
         recorder_device = None
-        two_channels = False
+        ch_num = 1
         try:
             with open(file, 'r') as file:
                 test_line = file.readline()
 
                 for device in self.cfg:
-                    position = slice(device['position'])
-                    if test_line[position] == device['signature_1ch']:
+                    position = slice(*self.cfg[device]['position'])
+                    if test_line[position] == (self.cfg[device]
+                                               ['signature_1ch']):
                         recorder_device = device
                         break
-                    elif test_line[position] == device['signature_2ch']:
+                    elif test_line[position] == (self.cfg[device]
+                                                 ['signature_2ch']):
                         recorder_device = device
-                        two_channels = True
+                        ch_num += 1
                         break
                 else:
                     if recorder_device is None:
                         raise WrongCsvStructureError  # TODO: Возвращение в цикл
-                data, t_step = self.extract(file, device['invert'],
-                                            recorder_device, two_channels)
+                data, t_step = self.extract(file, recorder_device, ch_num)
         except FileNotFoundError:
             pass  # TODO: Возвращение в цикл
-        return data, t_step, recorder_device, two_channels
+        return data, t_step, recorder_device, ch_num
 
-    def extract(self, file, invert, device, two_channels):
+    def extract(self, file, device, ch_num):
         """
         Извлечение данных из csv-файла.
 
@@ -113,12 +98,10 @@ class Opener:
         ----------
         file : str
             Адрес обрабатываемого файла.
-        invert : list of bool
-            Наличие необходимости в инвертировании для каналов.
         device : str
-            Название прибора, записавшего файл
-        two_channels : bool
-            Наличие двухканальной записи в файле.
+            Название прибора, записавшего файл.
+        ch_num : bool
+            Число каналов в файле.
 
         Returns
         -------
@@ -130,9 +113,7 @@ class Opener:
         Notes
         -----
         Создается словарь data и список имен каналов names. Если канал
-        один, то names ограничивается справа. Определяются коэффициенты
-        инвертирования согласно bool аргументам invert, при этом первый
-        столбец данных (время) не инвертируется. Дальнейшее поведение
+        один, то names ограничивается справа. Дальнейшее поведение
         зависит от записывающего прибора. В общем случае метод
         считывает данные из файла посредством команды read_csv модуля
         Pandas, при этом указывается запрет на автоматическую
@@ -141,7 +122,6 @@ class Opener:
         подвергаются только указанные строки. Результатом импорта
         становится объект DataFrame, из него извлекаются массивы Numpy
         и помещаются в словарь data под соответствующими именами.
-        Одновременно выполняется инвертирование умножением на 1 или -1.
         Также для осциллографа Rigol MSO1104Z/DS1074Z требуются
         дополнительные параметры времени. Время в файлах данного
         формата представлено в виде значений шага и стартового времени,
@@ -159,36 +139,31 @@ class Opener:
         """
         data = {}
         t_step = None
-        names = ['t', 'ch1', 'ch2']
-        if not two_channels:
-            names = names[:-1]
-        # Коэффициенты инвертирования каналов: 1 когда False, -1 когда True
-        invert = [1] + [1 - 2*i for i in invert]
+        names = ['t', 'ch1', 'ch2', 'ch3', 'ch4', 'ch5'][:ch_num + 1]
 
         if device == 'Globaltest':
             df = pd.read_csv(file, index_col=False, names=names, sep='\t')
             for num, name in enumerate(names):
-                data[name] = df[name].values*invert[num]
+                data[name] = df[name].values
             t_step = (data['t'][-1] - data['t'][0])/len(data['t'])
             # FIXME Сделать адекватную нормализацию
+            # func = sp.interpolate.interp1d(t, ch)
             for i in range(len(data['t']) - 1):
                 data['t'][i + 1] = data['t'] + t_step
 
         elif device == 'Gydropribor':
-            df = pd.read_csv(file, index_col=False, names=names, sep='\s+')
-            for name in names:
-                data[name] = df[name].values*invert[num]
+            df = pd.read_csv(file, index_col=False, names=names, sep='\\s+')
+            for num, name in enumerate(names):
+                data[name] = df[name].values
             t_step = (data['t'][-1] - data['t'][0])/len(data['t'])
             # !!! TODO Проверить необходимость добавления фиксированного шага
 
         elif device == 'Micsig tBook':
-            usecols = [3, 4, 10]
-            if not two_channels:
-                usecols = usecols[:-1]
+            usecols = [3, 4, 10][:ch_num + 1]
             df = pd.read_csv(file, index_col=False, names=names,
                              skiprows=13, usecols=usecols)
-            for name in names:
-                data[name] = df[name].values*invert[num]
+            for num, name in enumerate(names):
+                data[name] = df[name].values
             delay = np.loadtxt(file, delimiter=',', dtype='str',
                                skiprows=5, max_rows=1, usecols=1)
             delay = float(np.ndarray.item(delay).split(' ')[0])
@@ -196,39 +171,40 @@ class Opener:
             t_step = (data['t'][-1] - data['t'][0])/len(data['t'])
 
         elif device == 'Rigol MSO1104Z/DS1074Z':
-            params = list(map(float, file.readline().split(',')[2:]))
+            params_position = slice(ch_num + 1, None)
+            params = list(map(float,
+                              file.readline().split(',')[params_position]))
             t_start, t_step = params[0], params[1]
             df = pd.read_csv(file, index_col=False, names=names)
-            for name in names:
-                data[name] = df[name].values*invert[num]
-            data['t'] = t_start + t_step*data['t'].values
+            for num, name in enumerate(names):
+                data[name] = df[name].values
+            data['t'] = t_start + t_step*data['t']
 
         elif device == 'Rigol DS1102E':
             df = pd.read_csv(file, index_col=False, names=names,
                              delimiter=',', skiprows=1)
-            for name in names:
-                data[name] = df[name].values*invert[num]
+            for num, name in enumerate(names):
+                data[name] = df[name].values
             t_step = (data['t'][-1] - data['t'][0])/len(data['t'])
 
         elif device == 'Rigol (unknown)':
-            params = file.readline().split('\t')[2:]
+            params_position = slice(ch_num + 1, None)
+            params = file.readline().split('\t')[params_position]
             params = [float(i.replace(',', '.')) for i in params]
             t_start, t_step = params[0], params[1]
             df = pd.read_csv(file, index_col=False, names=names,
                              delimiter='\t', decimal=',')
-            for name in names:
-                data[name] = df[name].values*invert[num]
+            for num, name in enumerate(names):
+                data[name] = df[name].values
             data['t'] = t_start + t_step*data['t'].values
 
         elif device == 'Tektronix MSO46':
             df = pd.read_csv(file, index_col=False, names=names, skiprows=12)
-            for name in names:
-                data[name] = df[name].values*invert[num]
+            for num, name in enumerate(names):
+                data[name] = df[name].values
 
-        if not two_channels:
-            data = np.array([data['t'], data['ch1']])
-        else:
-            data = np.array([data['t'], data['ch1'], data['ch1']])
+        # Работает, если перебор по ключам идет в порядке добавления
+        data = np.array([data[key] for key in data.keys()])
         return data, t_step
 
         # TODO 'Tektronix TDS1012B', 'Tektronix TDS2012C'

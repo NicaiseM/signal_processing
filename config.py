@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""Сбор конфигурации из файлов в один модуль."""
 
 cfg = {
     'devices': {
@@ -47,5 +48,14 @@ cfg = {
             'invert': [True, True]
         }
         # TODO 'Tektronix TDS1012B', 'Tektronix TDS2012C'
-    }
+    },
+    'processing': {
+        'time_shift': True,
+        'channel_shift': True,
+        'channel_shift_amount': 1000,
+        'time_limitation': True,
+        'time_limits': (1e-6, 2e-6),
+        'moving_average_smoothing': True,
+        'moving_average_window': 10
+        }
 }
