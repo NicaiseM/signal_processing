@@ -16,12 +16,14 @@ from config import cfg
 from exceptions import WrongCsvStructureError
 
 
-# === Classes ===
+# === Классы ===
 class Opener:
     """Класс - импортер данных из csv-файлов."""
 
     def __init__(self):
-        self.cfg = cfg['devices']
+        self.cfg = cfg['devices'].copy()
+        for device in self.cfg:
+            self.cfg[device] = self.cfg[device]['reading']
 
     def read(self, file):
         """

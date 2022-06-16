@@ -2,20 +2,15 @@
 # -*- coding: utf-8 -*-
 """Обработка осциллографических записей."""
 
-# TODO
-    # открытие файлов - доработать
-    # обработка
-    # графопостроение
-
 # Future
 # from __future__ import
 
 # Standard Library
-import os
 
 # Third-party Libraries
 
 # Own sources
+from controller import Controller
 
 
 __author__      = "Nikita Makarchuck"
@@ -28,5 +23,16 @@ __email__       = "nicaise@rambler.ru"
 __status__      = "Prototype|Development|Production"
 
 
-# === Processing ===
-os.system('streamlit run streamlit_ui.py')
+# === Классы ===
+
+# === Функции ===
+
+# === Обработка ===
+ui = ('streamlit', 'pyqt')
+controller = Controller()
+controller.run(ui[0])
+
+# TODO
+    # открытие файлов - доработать
+    # обработка
+    # графопостроение

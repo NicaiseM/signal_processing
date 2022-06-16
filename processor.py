@@ -23,46 +23,52 @@ from metric import metric as mt
 from service_utilities import TimeTest
 
 
-# === Classes ===
+# === Классы ===
 class Processor():
     """Класс - обработчик данных."""
 
     def __init__(self):
         self.opener = Opener()
-        self.cfg = cfg['processing']
+        self.default_cfg_load()
+
+    def default_cfg_load(self):
+        self.default_cfg = cfg['devices'].copy()
+        for device in self.default_cfg:
+            self.default_cfg[device] = self.default_cfg[device]['processing']
+        self.cfg = self.default_cfg.copy()
+
+    def cfg_to_default_reset(self):
+        self.cfg = self.default_cfg.copy()
 
     def cfg_for_device_formation(self, device):
-        """
-        Формирование полного словаря настроек обработки.
+        self.cfg = self.cfg[device]
 
-        Parameters
-        ----------
-        device : str
-            Название прибора, записавшего файл.
+    def cfg_update(self, cfg_in, cfg_out):
+        for cfg in cfg_in:
+            if isinstance(cfg_in[cfg], dict):
+                self.cfg_update(cfg_in[cfg], cfg_out[cfg])
+            else:
+                cfg_out[cfg] = cfg_in[cfg]
 
-        Returns
-        -------
-        None.
+    def cfg_actualization(self, cfg_in, new_file):
+        if new_file:
+            self.cfg_to_default_reset()
+            self.cfg = self.cfg[self.device]
+        self.cfg_update(cfg_in, self.cfg)
 
-        Notes
-        -----
-        Общий словарь настроек обработки данных дополняется
-        параметрами, специфическими для каждого прибора.
-
-        """
-        self.cfg['invert'] = cfg['devices'][device]['invert']
-
-    def data_updating(self, *file):
+    def data_updating(self, cfg_in, *file):
+        new_file = False
         if file:
             self.data, self.t_step, self.device, self.ch_num \
                 = self.opener.read(file[0])
             self.raw_data = self.data
-            self.cfg_for_device_formation(self.device)
+            new_file = True
         else:
             self.current_data = self.raw_data
+        self.cfg_actualization(cfg_in, new_file)
 
-    def file_processing(self, *file):
-        self.data_updating(*file)
+    def file_processing(self, cfg_in, *file):
+        self.data_updating(cfg_in, *file)
         self.invert(self.data)
         if self.cfg['time_shift']:
             self.time_shift_removal(self.data, 0)
@@ -74,6 +80,7 @@ class Processor():
         if self.cfg['moving_average_smoothing']:
             self.moving_average_smoothing(self.data,
                                           self.cfg['moving_average_window'])
+        print('Done.')
 
     def invert(self, data):
         """
@@ -168,15 +175,17 @@ class Processor():
 
         Notes
         -----
+        Отсутствующие границы задаются как NaN, т.к. yaml понимает NaN
+        при конвертации значений во float, но не понимает None.
         Отсутствующие границы заменяются минимальным и максимальным
         значением массива времени соответственно. Определяется массив
         логических индексов под условие соответствия границам, после
         по этому массиву берется срез по всем строкам data.
 
         """
-        if time_limits[0] is None:
+        if np.isnan(time_limits[0]):
             time_limits[0] = np.min(data)
-        if time_limits[1] is None:
+        if np.isnan(time_limits[1]):
             time_limits[1] = np.max(data)
         ind = (time_limits[0] <= data[0]) & (data[0] <= time_limits[1])
         self.data = data[:, ind]
@@ -216,7 +225,9 @@ class Processor():
                 channel[i] = (window_sum/(2*window + 1))
 
 
-# === Processing ===
+# === Функции ===
+
+# === Обработка ===
 if __name__ == '__main__':
     file = 'test_working_dir/rigol-new/csv/NewFile3.csv'
     processor = Processor()
