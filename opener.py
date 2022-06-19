@@ -6,6 +6,8 @@
 # from __future__ import
 
 # Standard Library
+from io import StringIO
+from streamlit.elements.file_uploader import UploadedFile
 
 # Third-party Libraries
 import numpy as np
@@ -24,6 +26,51 @@ class Opener:
         self.cfg = cfg['devices'].copy()
         for device in self.cfg:
             self.cfg[device] = self.cfg[device]['reading']
+
+    def open(self, file):
+        """
+        Открытие csv-файла на чтение.
+
+        Parameters
+        ----------
+        file : str or PathLike or UploadedFile
+            Адрес обрабатываемого файла.
+
+        Returns
+        -------
+        data : array
+            Массив данных.
+        t_step : float
+            Шаг времени между выборками.
+        recorder_device : str
+            Название прибора, записавшего файл.
+        ch_num : bool
+            Число каналов в файле.
+
+        Notes
+        -----
+        Производится попытка открыть файл по адресу file, в случае
+        неудачи вызывается исключение FileNotFoundError Производится
+        проверка, является ли файл объектом UploadedFile, который
+        образуется при использовании st.file_uploader модуля Streamlit.
+        В этом случае файл уже открыт и записан в оперативной памяти,
+        он преобразуется в строку иструментом StringIO. Иначе открытие
+        текстового файла на чтение производится посредством функции
+        with(), что позволяет быть уверенным в том, что файл будет
+        закрыт независимо от результатов работы программы. Независимо
+        от способа открытия далее файл считывается методом read.
+
+        """
+        if isinstance(file, UploadedFile):
+            file = StringIO(file.getvalue().decode('utf-8'))
+            data, t_step, recorder_device, ch_num = self.read(file)
+        else:
+            try:
+                with open(file, 'r', encoding='utf-8') as file:
+                    data, t_step, recorder_device, ch_num = self.read(file)
+            except FileNotFoundError:
+                return  # TODO: Возвращение в цикл
+            return data, t_step, recorder_device, ch_num
 
     def read(self, file):
         """
@@ -47,11 +94,7 @@ class Opener:
 
         Notes
         -----
-        Производится попытка открыть файл по адресу file, в случае
-        неудачи вызывается исключение FileNotFoundError Открытие
-        текстового файла на чтение производится посредством функции
-        with(), что позволяет быть уверенным в том, что файл будет
-        закрыт независимо от результатов работы программы. Первая
+        На вход метода подается файл в открытом текстовом виде Первая
         строка каждого файла схраняется. Первая строка будет уникальной
         для каждого осциллографа, и, посредством сравнения строки,
         считанной из файла, с образцами из словаря self.cfg происходит
@@ -62,34 +105,31 @@ class Opener:
         одноканальных и двухканальных записей, результат сравнения
         определяет также количество каналов. Если происходит
         совпадение, то сохраняется название прибора, записавшего файл,
-        и цикл прекращается. Далее данные считываются из файла при
+        и цикл прекращается. Далее данные извлекаются из файла при
         помощи метода extract. Если совпадения нет, то вызывается
         исключение WrongCsvStructureError.
 
         """
         recorder_device = None
         ch_num = 1
-        try:
-            with open(file, 'r') as file:
-                test_line = file.readline()
+        test_line = file.readline()
 
-                for device in self.cfg:
-                    position = slice(*self.cfg[device]['position'])
-                    if test_line[position] == (self.cfg[device]
-                                               ['signature_1ch']):
-                        recorder_device = device
-                        break
-                    elif test_line[position] == (self.cfg[device]
-                                                 ['signature_2ch']):
-                        recorder_device = device
-                        ch_num += 1
-                        break
-                else:
-                    if recorder_device is None:
-                        raise WrongCsvStructureError  # TODO: Возвращение в цикл
-                data, t_step = self.extract(file, recorder_device, ch_num)
-        except FileNotFoundError:
-            pass  # TODO: Возвращение в цикл
+        for device in self.cfg:
+            position = slice(*self.cfg[device]['position'])
+            if test_line[position] == (self.cfg[device]
+                                       ['signature_1ch']):
+                recorder_device = device
+                break
+            elif test_line[position] == (self.cfg[device]
+                                         ['signature_2ch']):
+                recorder_device = device
+                ch_num += 1
+                break
+        else:
+            if recorder_device is None:
+                raise WrongCsvStructureError
+                return  # TODO: Возвращение в цикл
+        data, t_step = self.extract(file, recorder_device, ch_num)
         return data, t_step, recorder_device, ch_num
 
     def extract(self, file, device, ch_num):

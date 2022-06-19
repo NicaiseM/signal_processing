@@ -4,7 +4,7 @@ save_data_on_exit = True
 save_history = True
 save_non_project_files = False
 project_type = 'empty-project-type'
-recent_files = ['opener.py', 'main.py', 'processor.py', 'config.py', '../shock_testing/processing.py', '../shock_testing/ui.py', 'old/test5.py', 'old/test.py', 'streamlit_ui.py', 'controller.py']
+recent_files = ['opener.py', 'main.py', 'processor.py', 'config.py', '../shock_testing/ui.py', 'streamlit_ui.py', 'controller.py']
 
 [main]
 version = 0.2.0

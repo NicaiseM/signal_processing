@@ -60,7 +60,7 @@ class Processor():
         new_file = False
         if file:
             self.data, self.t_step, self.device, self.ch_num \
-                = self.opener.read(file[0])
+                = self.opener.open(file[0])
             self.raw_data = self.data
             new_file = True
         else:

@@ -20,7 +20,11 @@ class Configurator():
     def __init__(self):
         with open('./config_default.yml') as f:
             self.default_cfg = yaml.safe_load(f)
+            self.cfg = self.default_cfg
+
 
 # === Функции ===
 
 # === Обработка ===
+configurator = Configurator()
+cfg = configurator.cfg.copy()  # Заглушка для исполнения остального кода

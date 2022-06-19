@@ -38,7 +38,7 @@ if channelShiftBox:
     txt = 'Число первых выборок для определения нуля'
     min_n, max_n = 0, 5000
     ch_shift_amount = st.sidebar.slider(txt, min_value=min_n, max_value=max_n,
-                                        value=[min_n, max_n])  # Два значения в слайдере!
+                                        value=1/2*(max_n - min_n))
 else:
     ch_shift_amount = 0
 timeLimitationBox = st.sidebar.checkbox('Ограничение по времени')
@@ -55,7 +55,7 @@ if smoothingBox:
     txt = 'Ширина окна сглаживания'
     min_n, max_n = 0, 5000
     smooth_window = st.sidebar.slider(txt, min_value=min_n, max_value=max_n,
-                                      value=[min_n, max_n])
+                                      value=1/2*(max_n - min_n))
 else:
     smooth_window = 0
 
