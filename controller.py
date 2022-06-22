@@ -10,6 +10,7 @@ import os
 # Third-party Libraries
 
 # Own sources
+import config
 from processor import Processor
 
 
@@ -19,6 +20,7 @@ class Controller():
 
     def __init__(self):
         self.processor = Processor()
+        self.configurator = config.configurator
         self.last_file = None
 
     def run(self, ui):
@@ -45,12 +47,8 @@ class Controller():
         elif ui == 'pyqt':
             pass
 
-    def processing_start(self, cfg_in, file):
-        if file == self.last_file:
-            self.processor.file_processing(cfg_in)
-        else:
-            self.last_file = file
-            self.processor.file_processing(cfg_in, file)
+    def processing_start(self, file):
+        self.processor.file_processing(file)
 
 # === Функции ===
 

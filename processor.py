@@ -17,7 +17,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 # Own sources
-from config import cfg
+import config
 from opener import Opener
 from metric import metric as mt
 from service_utilities import TimeTest
@@ -29,46 +29,17 @@ class Processor():
 
     def __init__(self):
         self.opener = Opener()
-        self.default_cfg_load()
 
-    def default_cfg_load(self):
-        self.default_cfg = cfg['devices'].copy()
-        for device in self.default_cfg:
-            self.default_cfg[device] = self.default_cfg[device]['processing']
-        self.cfg = self.default_cfg.copy()
-
-    def cfg_to_default_reset(self):
-        self.cfg = self.default_cfg.copy()
-
-    def cfg_for_device_formation(self, device):
-        self.cfg = self.cfg[device]
-
-    def cfg_update(self, cfg_in, cfg_out):
-        for cfg in cfg_in:
-            if isinstance(cfg_in[cfg], dict):
-                self.cfg_update(cfg_in[cfg], cfg_out[cfg])
-            else:
-                cfg_out[cfg] = cfg_in[cfg]
-
-    def cfg_actualization(self, cfg_in, new_file):
-        if new_file:
-            self.cfg_to_default_reset()
-            self.cfg = self.cfg[self.device]
-        self.cfg_update(cfg_in, self.cfg)
-
-    def data_updating(self, cfg_in, *file):
-        new_file = False
+    def data_updating(self, file):
         if file:
-            self.data, self.t_step, self.device, self.ch_num \
+            self.raw_data, self.t_step, self.device, self.ch_num \
                 = self.opener.open(file[0])
-            self.raw_data = self.data
-            new_file = True
-        else:
-            self.current_data = self.raw_data
-        self.cfg_actualization(cfg_in, new_file)
+        self.data = self.raw_data.copy()
+        self.cfg = config.configurator.device_cfg_extract('processing',  # !!! Что делать, если не назначен прибор?
+                                                          device=self.device)
 
-    def file_processing(self, cfg_in, *file):
-        self.data_updating(cfg_in, *file)
+    def file_processing(self, *file):
+        self.data_updating(file)
         self.invert(self.data)
         if self.cfg['time_shift']:
             self.time_shift_removal(self.data, 0)

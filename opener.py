@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 
 # Own sources
-from config import cfg
+import config
 from exceptions import WrongCsvStructureError
 
 
@@ -23,9 +23,7 @@ class Opener:
     """Класс - импортер данных из csv-файлов."""
 
     def __init__(self):
-        self.cfg = cfg['devices'].copy()
-        for device in self.cfg:
-            self.cfg[device] = self.cfg[device]['reading']
+        self.cfg = config.configurator.device_cfg_extract('reading')
 
     def open(self, file):
         """
@@ -212,7 +210,7 @@ class Opener:
             data['t'] = data['t'] - ((data['t'][-1] - data['t'][0])/2 - delay)
             t_step = (data['t'][-1] - data['t'][0])/len(data['t'])
 
-        elif device == 'Rigol MSO1104Z/DS1074Z':
+        elif device == 'Rigol DS1000Z Series':
             params_position = slice(ch_num + 1, None)
             params = list(map(float,
                               file.readline().split(',')[params_position]))
@@ -229,7 +227,7 @@ class Opener:
                 data[name] = df[name].values
             t_step = (data['t'][-1] - data['t'][0])/len(data['t'])
 
-        elif device == 'Rigol (unknown)':
+        elif device == 'Rigol DG4202':
             params_position = slice(ch_num + 1, None)
             params = file.readline().split('\t')[params_position]
             params = [float(i.replace(',', '.')) for i in params]

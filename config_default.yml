@@ -5,7 +5,7 @@
     'show_legend': False    # Отрисовка легенды графиков
     't_sign': 't, {0}с'     # Подпись по оси времени !!! Исправить
 'devices':
-    'Globaltest':  # FIXME Правильное название и сигнатура
+    'GTLab D401':  # FIXME Правильное название и сигнатура
         'reading':
             'signature_1ch': 'FIXME'  # FIXME Заполнить
             'signature_2ch': 'time\t'
@@ -26,6 +26,13 @@
             'position': [0, 4]
         'processing':
             'invert': [False, False]
+            'time_shift': False                                 # Ликвидация смещения нуля по времени
+            'channel_shift': False                              # Ликвидация смещения нуля по сигналу
+            'channel_shift_amount': 1000                        # Число условно принятых за ноль первых элементов сигнала
+            'time_limitation': False                            # Ограничение по времени
+            'time_limits': [!!float NaN, !!float NaN]           # Левая и правая границы по времени
+            'moving_average_smoothing': False                   # Сглаживание скользящей средней
+            'moving_average_window': 1000                       # Ширина окна сглаживания
     'Micsig tBook':
         'reading':
             'signature_1ch': 'ProID,Info,,time,Vo'
@@ -33,13 +40,27 @@
             'position': [0, -4]
         'processing':
             'invert': [False, False]
-    'Rigol MSO1104Z/DS1074Z':
+            'time_shift': False                                 # Ликвидация смещения нуля по времени
+            'channel_shift': False                              # Ликвидация смещения нуля по сигналу
+            'channel_shift_amount': 1000                        # Число условно принятых за ноль первых элементов сигнала
+            'time_limitation': False                            # Ограничение по времени
+            'time_limits': [!!float NaN, !!float NaN]           # Левая и правая границы по времени
+            'moving_average_smoothing': False                   # Сглаживание скользящей средней
+            'moving_average_window': 1000                       # Ширина окна сглаживания
+    'Rigol DS1000Z Series':
         'reading':
             'signature_1ch': 'X,CH1,Start,Increment'
             'signature_2ch': 'X,CH1,CH2,Start,Increment'
-        'processing':
             'position': [0, -2]
+        'processing':
             'invert': [False, False]
+            'time_shift': False                                 # Ликвидация смещения нуля по времени
+            'channel_shift': False                              # Ликвидация смещения нуля по сигналу
+            'channel_shift_amount': 1000                        # Число условно принятых за ноль первых элементов сигнала
+            'time_limitation': False                            # Ограничение по времени
+            'time_limits': [!!float NaN, !!float NaN]           # Левая и правая границы по времени
+            'moving_average_smoothing': False                   # Сглаживание скользящей средней
+            'moving_average_window': 1000                       # Ширина окна сглаживания
     'Rigol DS1102E':
         'reading':
             'signature_1ch': 'Time,X(CH1)'
@@ -47,13 +68,27 @@
             'position': [0, -2]
         'processing':
             'invert': [False, False]
-    'Rigol (unknown)':  # FIXME Что это за прибор? Узнать!
+            'time_shift': False                                 # Ликвидация смещения нуля по времени
+            'channel_shift': False                              # Ликвидация смещения нуля по сигналу
+            'channel_shift_amount': 1000                        # Число условно принятых за ноль первых элементов сигнала
+            'time_limitation': False                            # Ограничение по времени
+            'time_limits': [!!float NaN, !!float NaN]           # Левая и правая границы по времени
+            'moving_average_smoothing': False                   # Сглаживание скользящей средней
+            'moving_average_window': 1000                       # Ширина окна сглаживания
+    'Rigol DG4202':  # FIXME Предположительно. Файл импульса от КВГ. Что это за прибор? Узнать!
         'reading':
             'signature_1ch': 'X\tCH1\tStart\tIncrement'
             'signature_2ch': 'X\tCH1\tCH2\tStart\tIncrement'  # !!! Снять
             'position': [0, -2]
         'processing':
             'invert': [False, False]
+            'time_shift': False                                 # Ликвидация смещения нуля по времени
+            'channel_shift': False                              # Ликвидация смещения нуля по сигналу
+            'channel_shift_amount': 1000                        # Число условно принятых за ноль первых элементов сигнала
+            'time_limitation': False                            # Ограничение по времени
+            'time_limits': [!!float NaN, !!float NaN]           # Левая и правая границы по времени
+            'moving_average_smoothing': False                   # Сглаживание скользящей средней
+            'moving_average_window': 1000                       # Ширина окна сглаживания
     'Tektronix MSO46':
         'reading':
             'signature_1ch': 'X,CH1,Start,Increment'  # !!! Снять
@@ -61,4 +96,11 @@
             'position': [0, -1]
         'processing':
             'invert': [True, True]
+            'time_shift': False                                 # Ликвидация смещения нуля по времени
+            'channel_shift': False                              # Ликвидация смещения нуля по сигналу
+            'channel_shift_amount': 1000                        # Число условно принятых за ноль первых элементов сигнала
+            'time_limitation': False                            # Ограничение по времени
+            'time_limits': [!!float NaN, !!float NaN]           # Левая и правая границы по времени
+            'moving_average_smoothing': False                   # Сглаживание скользящей средней
+            'moving_average_window': 1000                       # Ширина окна сглаживания
 
