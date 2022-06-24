@@ -10,7 +10,7 @@
 # Third-party Libraries
 
 # Own sources
-from controller import Controller
+import controller
 
 
 __author__      = "Nikita Makarchuck"
@@ -29,10 +29,10 @@ __status__      = "Prototype|Development|Production"
 
 # === Обработка ===
 ui = ('streamlit', 'pyqt')
-controller = Controller()
-controller.run(ui[0])
+controller.controller.run(ui[0])
 
 # TODO
-    # открытие файлов - доработать
-    # обработка
+    # стримлит работает будто наоборот с смещением по времени и каналу
+    # интерактивные графики в стримлите
+    # доработать обработку на большее число каналов
     # графопостроение

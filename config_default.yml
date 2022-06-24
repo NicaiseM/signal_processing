@@ -2,8 +2,11 @@
     'fig_format': 'png'     # Расширение графиков
     'fig_dpi': 300          # DPI графиков
     'show_title': True      # Отрисовка заголовков графиков
-    'show_legend': False    # Отрисовка легенды графиков
-    't_sign': 't, {0}с'     # Подпись по оси времени !!! Исправить
+    'show_legend': True    # Отрисовка легенды графиков
+'metric':
+    't_mt_factor': 0
+    'ch1_mt_factor': 0
+    'ch2_mt_factor': 0
 'devices':
     'GTLab D401':  # FIXME Правильное название и сигнатура
         'reading':
@@ -60,7 +63,7 @@
             'time_limitation': False                            # Ограничение по времени
             'time_limits': [!!float NaN, !!float NaN]           # Левая и правая границы по времени
             'moving_average_smoothing': False                   # Сглаживание скользящей средней
-            'moving_average_window': 1000                       # Ширина окна сглаживания
+            'moving_average_window': 100                        # Ширина окна сглаживания
     'Rigol DS1102E':
         'reading':
             'signature_1ch': 'Time,X(CH1)'
@@ -103,4 +106,3 @@
             'time_limits': [!!float NaN, !!float NaN]           # Левая и правая границы по времени
             'moving_average_smoothing': False                   # Сглаживание скользящей средней
             'moving_average_window': 1000                       # Ширина окна сглаживания
-

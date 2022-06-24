@@ -33,11 +33,11 @@ class Configurator():
         изменяться в ходе выполнения программы и смены настроек.
 
         """
-        with open('./config_default.yml') as f:
+        with open('./config_default.yml', 'r', encoding='utf-8') as f:
             self.default_cfg = yaml.safe_load(f)
             self.cfg = self.default_cfg.copy()
 
-    def cfg_to_default_reset(self):  # !!! На кнопку "Настройки по умолчанию"
+    def cfg_to_default_reset(self):
         """
         Возвращение конфигуратора к настройкам по умолчанию.
 
@@ -93,18 +93,15 @@ class Configurator():
                 tmp_cfg[device] = self.cfg['devices'][device][category]
         return tmp_cfg
 
+    def cfg_update(self, key, value, device=None):
+        if key in self.cfg['metric']:
+            self.cfg['metric'][key] = value
+        elif device is not None:
+            if key in self.cfg['devices'][device]['processing']:
+                self.cfg['devices'][device]['processing'][key] = value
 
 
 # === Функции ===
 
 # === Обработка ===
 configurator = Configurator()
-
-
-
-    # def cfg_update(self, cfg_in, cfg_out):
-    #     for cfg in cfg_in:
-    #         if isinstance(cfg_in[cfg], dict):
-    #             self.cfg_update(cfg_in[cfg], cfg_out[cfg])
-    #         else:
-    #             cfg_out[cfg] = cfg_in[cfg]

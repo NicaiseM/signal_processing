@@ -6,6 +6,7 @@
 
 # Standard Library
 import os
+from datetime import datetime
 
 # Third-party Libraries
 
@@ -20,8 +21,10 @@ class Controller():
 
     def __init__(self):
         self.processor = Processor()
-        self.configurator = config.configurator
+        self.cfg = config.configurator.cfg
         self.last_file = None
+        self.last_time = datetime.now()
+        self.counter = 0  # !!! Для проверки частоты обновления скрипта streamlit
 
     def run(self, ui):
         """
@@ -44,12 +47,33 @@ class Controller():
         """
         if ui == 'streamlit':
             os.system('streamlit run streamlit_ui.py')
+            self.processor.plotter.canvas = None
         elif ui == 'pyqt':
             pass
 
     def processing_start(self, file):
-        self.processor.file_processing(file)
+        if self.last_file is not file:
+            self.last_file = file
+            self.processor.file_processing(file)
+        else:
+            self.processor.file_processing()
+
+    def cfg_update(self, key, value):
+        config.configurator.cfg_update(key, value, self.processor.device)
+        self.time_now = datetime.now()
+        delta = self.time_now - self.last_time
+        if self.last_file and delta.total_seconds() >= 0.01:  # Защита
+            self.processing_start(self.last_file)
+            self.last_time = self.time_now
+
+    def cfg_to_default_reset(self):
+        config.configurator.cfg_to_default_reset()
+
 
 # === Функции ===
 
 # === Обработка ===
+controller = Controller()
+if __name__ == '__main__':
+    file = 'test_working_dir/rigol-new/csv/NewFile3.csv'
+    controller.processing_start(file)

@@ -7,11 +7,11 @@
 
 # Standard Library
 from io import StringIO
-from streamlit.elements.file_uploader import UploadedFile
 
 # Third-party Libraries
 import numpy as np
 import pandas as pd
+from streamlit.elements.file_uploader import UploadedFile
 
 # Own sources
 import config
@@ -60,7 +60,7 @@ class Opener:
 
         """
         if isinstance(file, UploadedFile):
-            file = StringIO(file.getvalue().decode('utf-8'))
+            file = StringIO(file.getvalue().decode('utf-8'), newline=None)
             data, t_step, recorder_device, ch_num = self.read(file)
         else:
             try:
@@ -68,7 +68,7 @@ class Opener:
                     data, t_step, recorder_device, ch_num = self.read(file)
             except FileNotFoundError:
                 return  # TODO: Возвращение в цикл
-            return data, t_step, recorder_device, ch_num
+        return data, t_step, recorder_device, ch_num
 
     def read(self, file):
         """
@@ -111,7 +111,6 @@ class Opener:
         recorder_device = None
         ch_num = 1
         test_line = file.readline()
-
         for device in self.cfg:
             position = slice(*self.cfg[device]['position'])
             if test_line[position] == (self.cfg[device]
@@ -125,6 +124,7 @@ class Opener:
                 break
         else:
             if recorder_device is None:
+                position = slice(*self.cfg['Rigol DS1000Z Series']['position'])
                 raise WrongCsvStructureError
                 return  # TODO: Возвращение в цикл
         data, t_step = self.extract(file, recorder_device, ch_num)
@@ -242,7 +242,6 @@ class Opener:
             df = pd.read_csv(file, index_col=False, names=names, skiprows=12)
             for num, name in enumerate(names):
                 data[name] = df[name].values
-
         # Работает, если перебор по ключам идет в порядке добавления
         data = np.array([data[key] for key in data.keys()])
         return data, t_step

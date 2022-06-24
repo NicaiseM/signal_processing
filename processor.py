@@ -6,21 +6,15 @@
 # from __future__ import
 
 # Standard Library
-import os
-from pathlib import Path
 
 # Third-party Libraries
-import scipy
 import numpy as np
-import pandas as pd
-import matplotlib as mpl
-import matplotlib.pyplot as plt
 
 # Own sources
 import config
 from opener import Opener
+from plotter import Plotter
 from metric import metric as mt
-from service_utilities import TimeTest
 
 
 # === Классы ===
@@ -29,6 +23,8 @@ class Processor():
 
     def __init__(self):
         self.opener = Opener()
+        self.plotter = Plotter()
+        self.device = None
 
     def data_updating(self, file):
         if file:
@@ -37,8 +33,12 @@ class Processor():
         self.data = self.raw_data.copy()
         self.cfg = config.configurator.device_cfg_extract('processing',  # !!! Что делать, если не назначен прибор?
                                                           device=self.device)
+        for key, value in config.configurator.cfg['metric'].items():
+            self.cfg[key] = value
 
     def file_processing(self, *file):
+        if not file:
+            file = None
         self.data_updating(file)
         self.invert(self.data)
         if self.cfg['time_shift']:
@@ -51,7 +51,10 @@ class Processor():
         if self.cfg['moving_average_smoothing']:
             self.moving_average_smoothing(self.data,
                                           self.cfg['moving_average_window'])
-        print('Done.')
+        self.plotter.plotting(self.data[0], self.data[1], self.data[2],
+                              mt[self.cfg['t_mt_factor']],
+                              mt[self.cfg['ch1_mt_factor']],
+                              mt[self.cfg['ch2_mt_factor']])
 
     def invert(self, data):
         """
@@ -100,7 +103,7 @@ class Processor():
         значения.
 
         """
-        time_shift = zero_time
+        time_shift = data[0][0] - zero_time
         data[0] -= time_shift
 
     def channel_shift_removal(self, data, amount=1000):
@@ -203,5 +206,3 @@ if __name__ == '__main__':
     file = 'test_working_dir/rigol-new/csv/NewFile3.csv'
     processor = Processor()
     processor.file_processing(file)
-    data = processor.data
-    plt.plot(data[0], data[1], data[0], data[2])
