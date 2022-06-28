@@ -6,6 +6,7 @@
 # from __future__ import
 
 # Standard Library
+import copy
 
 # Third-party Libraries
 
@@ -35,7 +36,7 @@ class Configurator():
         """
         with open('./config_default.yml', 'r', encoding='utf-8') as f:
             self.default_cfg = yaml.safe_load(f)
-            self.cfg = self.default_cfg.copy()
+            self.cfg_to_default_reset()
 
     def cfg_to_default_reset(self):
         """
@@ -50,7 +51,7 @@ class Configurator():
         В поле текущих настроек перезаписываются изначальные параметры.
 
         """
-        self.cfg = self.default_cfg.copy()
+        self.cfg = copy.deepcopy(self.default_cfg)
 
     def device_cfg_extract(self, category, device=None):
         """

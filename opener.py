@@ -67,7 +67,8 @@ class Opener:
                 with open(file, 'r', encoding='utf-8') as file:
                     data, t_step, recorder_device, ch_num = self.read(file)
             except FileNotFoundError:
-                return  # TODO: Возвращение в цикл
+                pass
+                # return  # TODO: Возвращение в цикл
         return data, t_step, recorder_device, ch_num
 
     def read(self, file):

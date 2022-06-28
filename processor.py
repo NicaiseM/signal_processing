@@ -30,11 +30,13 @@ class Processor():
         if file:
             self.raw_data, self.t_step, self.device, self.ch_num \
                 = self.opener.open(file[0])
-        self.data = self.raw_data.copy()
-        self.cfg = config.configurator.device_cfg_extract('processing',  # !!! Что делать, если не назначен прибор?
-                                                          device=self.device)
-        for key, value in config.configurator.cfg['metric'].items():
-            self.cfg[key] = value
+        if hasattr(self, 'raw_data'):
+            self.data = self.raw_data.copy()
+            self.cfg = config.configurator.device_cfg_extract('processing',
+                                                              self.device)
+            for key, value in config.configurator.cfg['metric'].items():
+                self.cfg[key] = value
+
 
     def file_processing(self, *file):
         if not file:

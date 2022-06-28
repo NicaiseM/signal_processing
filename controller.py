@@ -24,7 +24,6 @@ class Controller():
         self.cfg = config.configurator.cfg
         self.last_file = None
         self.last_time = datetime.now()
-        self.counter = 0  # !!! Для проверки частоты обновления скрипта streamlit
 
     def run(self, ui):
         """

@@ -17,11 +17,11 @@
             'invert': [False, False]                            # Инвертирование ch1 и ch2
             'time_shift': False                                 # Ликвидация смещения нуля по времени
             'channel_shift': False                              # Ликвидация смещения нуля по сигналу
-            'channel_shift_amount': 1000                        # Число условно принятых за ноль первых элементов сигнала
+            'channel_shift_amount': 100                         # Число условно принятых за ноль первых элементов сигнала
             'time_limitation': False                            # Ограничение по времени
             'time_limits': [!!float NaN, !!float NaN]           # Левая и правая границы по времени
             'moving_average_smoothing': False                   # Сглаживание скользящей средней
-            'moving_average_window': 1000                       # Ширина окна сглаживания
+            'moving_average_window': 3                          # Ширина окна сглаживания
     'Gydropribor':  # FIXME Правильное название и сигнатура
         'reading':
             'signature_1ch': '   '
@@ -31,11 +31,11 @@
             'invert': [False, False]
             'time_shift': False                                 # Ликвидация смещения нуля по времени
             'channel_shift': False                              # Ликвидация смещения нуля по сигналу
-            'channel_shift_amount': 1000                        # Число условно принятых за ноль первых элементов сигнала
+            'channel_shift_amount': 100                         # Число условно принятых за ноль первых элементов сигнала
             'time_limitation': False                            # Ограничение по времени
             'time_limits': [!!float NaN, !!float NaN]           # Левая и правая границы по времени
             'moving_average_smoothing': False                   # Сглаживание скользящей средней
-            'moving_average_window': 1000                       # Ширина окна сглаживания
+            'moving_average_window': 3                          # Ширина окна сглаживания
     'Micsig tBook':
         'reading':
             'signature_1ch': 'ProID,Info,,time,Vo'
@@ -45,11 +45,11 @@
             'invert': [False, False]
             'time_shift': False                                 # Ликвидация смещения нуля по времени
             'channel_shift': False                              # Ликвидация смещения нуля по сигналу
-            'channel_shift_amount': 1000                        # Число условно принятых за ноль первых элементов сигнала
+            'channel_shift_amount': 100                         # Число условно принятых за ноль первых элементов сигнала
             'time_limitation': False                            # Ограничение по времени
             'time_limits': [!!float NaN, !!float NaN]           # Левая и правая границы по времени
             'moving_average_smoothing': False                   # Сглаживание скользящей средней
-            'moving_average_window': 1000                       # Ширина окна сглаживания
+            'moving_average_window': 3                          # Ширина окна сглаживания
     'Rigol DS1000Z Series':
         'reading':
             'signature_1ch': 'X,CH1,Start,Increment'
@@ -57,13 +57,13 @@
             'position': [0, -2]
         'processing':
             'invert': [False, False]
-            'time_shift': False                                 # Ликвидация смещения нуля по времени
+            'time_shift': True                                  # Ликвидация смещения нуля по времени
             'channel_shift': False                              # Ликвидация смещения нуля по сигналу
-            'channel_shift_amount': 1000                        # Число условно принятых за ноль первых элементов сигнала
+            'channel_shift_amount': 100                         # Число условно принятых за ноль первых элементов сигнала
             'time_limitation': False                            # Ограничение по времени
             'time_limits': [!!float NaN, !!float NaN]           # Левая и правая границы по времени
             'moving_average_smoothing': False                   # Сглаживание скользящей средней
-            'moving_average_window': 100                        # Ширина окна сглаживания
+            'moving_average_window': 3                          # Ширина окна сглаживания
     'Rigol DS1102E':
         'reading':
             'signature_1ch': 'Time,X(CH1)'
@@ -73,11 +73,11 @@
             'invert': [False, False]
             'time_shift': False                                 # Ликвидация смещения нуля по времени
             'channel_shift': False                              # Ликвидация смещения нуля по сигналу
-            'channel_shift_amount': 1000                        # Число условно принятых за ноль первых элементов сигнала
+            'channel_shift_amount': 100                         # Число условно принятых за ноль первых элементов сигнала
             'time_limitation': False                            # Ограничение по времени
             'time_limits': [!!float NaN, !!float NaN]           # Левая и правая границы по времени
             'moving_average_smoothing': False                   # Сглаживание скользящей средней
-            'moving_average_window': 1000                       # Ширина окна сглаживания
+            'moving_average_window': 3                          # Ширина окна сглаживания
     'Rigol DG4202':  # FIXME Предположительно. Файл импульса от КВГ. Что это за прибор? Узнать!
         'reading':
             'signature_1ch': 'X\tCH1\tStart\tIncrement'
@@ -87,11 +87,11 @@
             'invert': [False, False]
             'time_shift': False                                 # Ликвидация смещения нуля по времени
             'channel_shift': False                              # Ликвидация смещения нуля по сигналу
-            'channel_shift_amount': 1000                        # Число условно принятых за ноль первых элементов сигнала
+            'channel_shift_amount': 100                         # Число условно принятых за ноль первых элементов сигнала
             'time_limitation': False                            # Ограничение по времени
             'time_limits': [!!float NaN, !!float NaN]           # Левая и правая границы по времени
             'moving_average_smoothing': False                   # Сглаживание скользящей средней
-            'moving_average_window': 1000                       # Ширина окна сглаживания
+            'moving_average_window': 3                          # Ширина окна сглаживания
     'Tektronix MSO46':
         'reading':
             'signature_1ch': 'X,CH1,Start,Increment'  # !!! Снять
@@ -101,8 +101,8 @@
             'invert': [True, True]
             'time_shift': False                                 # Ликвидация смещения нуля по времени
             'channel_shift': False                              # Ликвидация смещения нуля по сигналу
-            'channel_shift_amount': 1000                        # Число условно принятых за ноль первых элементов сигнала
+            'channel_shift_amount': 100                         # Число условно принятых за ноль первых элементов сигнала
             'time_limitation': False                            # Ограничение по времени
             'time_limits': [!!float NaN, !!float NaN]           # Левая и правая границы по времени
             'moving_average_smoothing': False                   # Сглаживание скользящей средней
-            'moving_average_window': 1000                       # Ширина окна сглаживания
+            'moving_average_window': 3                          # Ширина окна сглаживания
