@@ -20,6 +20,19 @@ class Controller():
     """Класс управления программой."""
 
     def __init__(self):
+        """
+        Инициализация контроллера.
+
+        Returns
+        -------
+        None.
+
+        Notes
+        -----
+        Как поле текущего класса определяется объект-обработчик,
+        загружается словарь конфигурации.
+
+        """
         self.processor = Processor()
         self.cfg = config.configurator.cfg
         self.last_file = None

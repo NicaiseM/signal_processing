@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""Визуализация данных."""
 
 # Future
 # from __future__ import
@@ -17,7 +18,28 @@ import config
 # === Классы ===
 
 class Plotter():
+    """Класс - графопостроитель."""
     def __init__(self, canvas=None):
+        """
+        Инициализация графопостроителя.
+
+        Parameters
+        ----------
+        canvas : Canvas
+            Место отрисовки графика. The default is None.
+
+        Returns
+        -------
+        None.
+
+        Notes
+        -----
+        Подгружаются настройки визуализации, отключается интерактивный
+        режим Matplotlib, в зависимости от параметра canvas выполняется
+        либо создание независимой фигуры, либо фигуры, включенной в
+        объект canvas интерфейса.
+
+        """
         self.cfg = config.configurator.cfg['visualization']
         plt.ioff()
         self.canvas = canvas
@@ -29,6 +51,23 @@ class Plotter():
         self.logo(self.ax)
 
     def logo(self, ax):
+        """
+        Отрисовка начального графика.
+
+        Parameters
+        ----------
+        ax : Axis
+            Место отрисовки графика.
+
+        Returns
+        -------
+        None.
+
+        Notes
+        -----
+        На заданных осях отрисовывается приветственная синусоида.
+
+        """
         logo_x = np.linspace(0, np.pi*2)
         logo_y = np.sin(logo_x)
         ax.plot(logo_x, logo_y)

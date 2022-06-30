@@ -13,14 +13,14 @@
 import controller
 
 
-__author__      = "Nikita Makarchuck"
-__copyright__   = "Copyright 2021, Nikita Makarchuck"
-__credits__     = ["Nikita Makarchuck"]
+__author__      = "Polina Punina"
+__copyright__   = "Copyright 2022, Polina Punina"
+__credits__     = ["Polina Punina, Nikita Makarchuck"]
 __license__     = "GPL"
-__version__     = "1.0.0"
-__maintainer__  = "Nikita Makarchuck"
+__version__     = "0.5.0"
+__maintainer__  = "Polina Punina"
 __email__       = "nicaise@rambler.ru"
-__status__      = "Prototype|Development|Production"
+__status__      = "Development"
 
 
 # === Классы ===

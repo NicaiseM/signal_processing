@@ -23,6 +23,19 @@ class Opener:
     """Класс - импортер данных из csv-файлов."""
 
     def __init__(self):
+        """
+        Инициализация открывашки.
+
+        Returns
+        -------
+        None.
+
+        Notes
+        -----
+        Из словаря конфигурации извлекаются настройки, связанные с
+        открытием файлов.
+
+        """
         self.cfg = config.configurator.device_cfg_extract('reading')
 
     def open(self, file):
