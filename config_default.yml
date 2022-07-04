@@ -22,7 +22,7 @@
             'time_limits': [!!float NaN, !!float NaN]           # Левая и правая границы по времени
             'moving_average_smoothing': False                   # Сглаживание скользящей средней
             'moving_average_window': 3                          # Ширина окна сглаживания
-    'Gydropribor':  # FIXME Правильное название и сигнатура
+    'WinПОС':  # FIXME Правильное название и сигнатура
         'reading':
             'signature_1ch': '   '
             'signature_2ch': 'FIXME'  # FIXME Заполнить

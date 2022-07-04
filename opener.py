@@ -195,7 +195,7 @@ class Opener:
         t_step = None
         names = ['t', 'ch1', 'ch2', 'ch3', 'ch4', 'ch5'][:ch_num + 1]
 
-        if device == 'Globaltest':
+        if device == 'GTLab D401':
             df = pd.read_csv(file, index_col=False, names=names, sep='\t')
             for num, name in enumerate(names):
                 data[name] = df[name].values
@@ -205,7 +205,7 @@ class Opener:
             for i in range(len(data['t']) - 1):
                 data['t'][i + 1] = data['t'] + t_step
 
-        elif device == 'Gydropribor':
+        elif device == 'WinПОС':
             df = pd.read_csv(file, index_col=False, names=names, sep='\\s+')
             for num, name in enumerate(names):
                 data[name] = df[name].values
