@@ -15,7 +15,7 @@ import controller
 
 __author__      = "Polina Punina"
 __copyright__   = "Copyright 2022, Polina Punina"
-__credits__     = ["Polina Punina, Nikita Makarchuck"]
+__credits__     = ["Polina Punina, Nikita Makarchuk"]
 __license__     = "GPL"
 __version__     = "0.5.0"
 __maintainer__  = "Polina Punina"
