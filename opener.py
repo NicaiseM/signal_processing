@@ -14,7 +14,7 @@ import pandas as pd
 from streamlit.elements.file_uploader import UploadedFile
 
 # Own sources
-import config
+import configurator
 from exceptions import WrongCsvStructureError
 
 
@@ -36,9 +36,9 @@ class Opener:
         открытием файлов.
 
         """
-        self.cfg = config.configurator.device_cfg_extract('reading')
+        self.cfg = configurator.configurator.device_cfg_extract('reading')
 
-    def open(self, file):
+    def open(self, file, recorder_device=None, ch_num=None):
         """
         Открытие csv-файла на чтение.
 
@@ -46,6 +46,10 @@ class Opener:
         ----------
         file : str or PathLike or UploadedFile
             Адрес обрабатываемого файла.
+        recorder_device : str
+            Название прибора, записавшего файл.
+        ch_num : int
+            Число каналов в файле.
 
         Returns
         -------
@@ -55,7 +59,7 @@ class Opener:
             Шаг времени между выборками.
         recorder_device : str
             Название прибора, записавшего файл.
-        ch_num : bool
+        ch_num : int
             Число каналов в файле.
 
         Notes
@@ -70,19 +74,24 @@ class Opener:
         with(), что позволяет быть уверенным в том, что файл будет
         закрыт независимо от результатов работы программы. Независимо
         от способа открытия далее файл считывается методом read.
+        Аргументы recorder_device и ch_num опциональны. Если они не
+        заданы, то определение прибора и числа каналов производится
+        в методе read.
 
         """
+        self.recorder_device = recorder_device
+        self.ch_num = ch_num
         if isinstance(file, UploadedFile):
             file = StringIO(file.getvalue().decode('utf-8'), newline=None)
-            data, t_step, recorder_device, ch_num = self.read(file)
+            data, t_step = self.read(file)
         else:
             try:
                 with open(file, 'r', encoding='utf-8') as file:
-                    data, t_step, recorder_device, ch_num = self.read(file)
+                    data, t_step = self.read(file)
             except FileNotFoundError:
                 pass
-                # return  # TODO: Возвращение в цикл
-        return data, t_step, recorder_device, ch_num
+                # return  # TODO Возвращение в цикл
+        return data, t_step, self.recorder_device, self.ch_num
 
     def read(self, file):
         """
@@ -99,10 +108,6 @@ class Opener:
             Массив данных.
         t_step : float
             Шаг времени между выборками.
-        recorder_device : str
-            Название прибора, записавшего файл.
-        ch_num : bool
-            Число каналов в файле.
 
         Notes
         -----
@@ -122,29 +127,30 @@ class Opener:
         исключение WrongCsvStructureError.
 
         """
-        recorder_device = None
-        ch_num = 1
         test_line = file.readline()
-        for device in self.cfg:
-            position = slice(*self.cfg[device]['position'])
-            if test_line[position] == (self.cfg[device]
-                                       ['signature_1ch']):
-                recorder_device = device
-                break
-            elif test_line[position] == (self.cfg[device]
-                                         ['signature_2ch']):
-                recorder_device = device
-                ch_num += 1
-                break
-        else:
-            if recorder_device is None:
-                position = slice(*self.cfg['Rigol DS1000Z Series']['position'])
-                raise WrongCsvStructureError
-                return  # TODO: Возвращение в цикл
-        data, t_step = self.extract(file, recorder_device, ch_num)
-        return data, t_step, recorder_device, ch_num
+        if not self.recorder_device:
+            self.ch_num = 1
+            for device in self.cfg:
+                position = slice(*self.cfg[device]['position'])
+                if test_line[position] == (self.cfg[device]
+                                           ['signature_1ch']):
+                    self.recorder_device = device
+                    break
+                elif test_line[position] == (self.cfg[device]
+                                             ['signature_2ch']):
+                    self.recorder_device = device
+                    self.ch_num += 1
+                    break
+            else:
+                if self.recorder_device is None:
+                    position = slice(
+                        *self.cfg['Rigol DS1000Z Series']['position'])
+                    raise WrongCsvStructureError
+                    return  # TODO: Возвращение в цикл
+        data, t_step = self.extract(file)
+        return data, t_step
 
-    def extract(self, file, device, ch_num):
+    def extract(self, file):
         """
         Извлечение данных из csv-файла.
 
@@ -152,10 +158,6 @@ class Opener:
         ----------
         file : str
             Адрес обрабатываемого файла.
-        device : str
-            Название прибора, записавшего файл.
-        ch_num : bool
-            Число каналов в файле.
 
         Returns
         -------
@@ -193,9 +195,9 @@ class Opener:
         """
         data = {}
         t_step = None
-        names = ['t', 'ch1', 'ch2', 'ch3', 'ch4', 'ch5'][:ch_num + 1]
+        names = ['t', 'ch1', 'ch2', 'ch3', 'ch4', 'ch5'][:self.ch_num + 1]
 
-        if device == 'GTLab D401':
+        if self.recorder_device == 'GTLab D401':
             df = pd.read_csv(file, index_col=False, names=names, sep='\t')
             for num, name in enumerate(names):
                 data[name] = df[name].values
@@ -205,15 +207,15 @@ class Opener:
             for i in range(len(data['t']) - 1):
                 data['t'][i + 1] = data['t'] + t_step
 
-        elif device == 'WinПОС':
+        elif self.recorder_device == 'WinПОС':
             df = pd.read_csv(file, index_col=False, names=names, sep='\\s+')
             for num, name in enumerate(names):
                 data[name] = df[name].values
             t_step = (data['t'][-1] - data['t'][0])/len(data['t'])
             # !!! TODO Проверить необходимость добавления фиксированного шага
 
-        elif device == 'Micsig tBook':
-            usecols = [3, 4, 10][:ch_num + 1]
+        elif self.recorder_device == 'Micsig tBook':
+            usecols = [3, 4, 10][:self.ch_num + 1]
             df = pd.read_csv(file, index_col=False, names=names,
                              skiprows=13, usecols=usecols)
             for num, name in enumerate(names):
@@ -224,8 +226,8 @@ class Opener:
             data['t'] = data['t'] - ((data['t'][-1] - data['t'][0])/2 - delay)
             t_step = (data['t'][-1] - data['t'][0])/len(data['t'])
 
-        elif device == 'Rigol DS1000Z Series':
-            params_position = slice(ch_num + 1, None)
+        elif self.recorder_device == 'Rigol DS1000Z Series':
+            params_position = slice(self.ch_num + 1, None)
             params = list(map(float,
                               file.readline().split(',')[params_position]))
             t_start, t_step = params[0], params[1]
@@ -234,15 +236,15 @@ class Opener:
                 data[name] = df[name].values
             data['t'] = t_start + t_step*data['t']
 
-        elif device == 'Rigol DS1102E':
+        elif self.recorder_device == 'Rigol DS1102E':
             df = pd.read_csv(file, index_col=False, names=names,
                              delimiter=',', skiprows=1)
             for num, name in enumerate(names):
                 data[name] = df[name].values
             t_step = (data['t'][-1] - data['t'][0])/len(data['t'])
 
-        elif device == 'Rigol DG4202':
-            params_position = slice(ch_num + 1, None)
+        elif self.recorder_device == 'Rigol DG4202':
+            params_position = slice(self.ch_num + 1, None)
             params = file.readline().split('\t')[params_position]
             params = [float(i.replace(',', '.')) for i in params]
             t_start, t_step = params[0], params[1]
@@ -252,7 +254,7 @@ class Opener:
                 data[name] = df[name].values
             data['t'] = t_start + t_step*data['t'].values
 
-        elif device == 'Tektronix MSO46':
+        elif self.recorder_device == 'Tektronix MSO46':
             df = pd.read_csv(file, index_col=False, names=names, skiprows=12)
             for num, name in enumerate(names):
                 data[name] = df[name].values

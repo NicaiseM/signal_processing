@@ -11,7 +11,7 @@ from datetime import datetime
 # Third-party Libraries
 
 # Own sources
-import config
+import configurator
 from processor import Processor
 
 
@@ -34,7 +34,7 @@ class Controller():
 
         """
         self.processor = Processor()
-        self.cfg = config.configurator.cfg
+        self.cfg = configurator.configurator.cfg
         self.last_file = None
         self.last_time = datetime.now()
 
@@ -71,7 +71,7 @@ class Controller():
             self.processor.file_processing()
 
     def cfg_update(self, key, value):
-        config.configurator.cfg_update(key, value, self.processor.device)
+        configurator.configurator.cfg_update(key, value, self.processor.device)
         self.time_now = datetime.now()
         delta = self.time_now - self.last_time
         if self.last_file and delta.total_seconds() >= 0.01:  # Защита
@@ -79,7 +79,7 @@ class Controller():
             self.last_time = self.time_now
 
     def cfg_to_default_reset(self):
-        config.configurator.cfg_to_default_reset()
+        configurator.configurator.cfg_to_default_reset()
 
 
 # === Функции ===
@@ -87,5 +87,5 @@ class Controller():
 # === Обработка ===
 controller = Controller()
 if __name__ == '__main__':
-    file = 'test_working_dir/rigol-new/csv/NewFile3.csv'
+    file = './__misc/test_working_dir/rigol-new/csv/NewFile3.csv'
     controller.processing_start(file)

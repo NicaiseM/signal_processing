@@ -13,7 +13,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 # Own sources
-import config
+import configurator
 
 # === Классы ===
 
@@ -40,7 +40,7 @@ class Plotter():
         объект canvas интерфейса.
 
         """
-        self.cfg = config.configurator.cfg['visualization']
+        self.cfg = configurator.configurator.cfg['visualization']
         plt.ioff()
         self.canvas = canvas
         if canvas is None:

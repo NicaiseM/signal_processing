@@ -11,7 +11,7 @@
 import numpy as np
 
 # Own sources
-import config
+import configurator
 from opener import Opener
 from plotter import Plotter
 from metric import metric as mt
@@ -45,9 +45,10 @@ class Processor():
                 = self.opener.open(file[0])
         if hasattr(self, 'raw_data'):
             self.data = self.raw_data.copy()
-            self.cfg = config.configurator.device_cfg_extract('processing',
-                                                              self.device)
-            for key, value in config.configurator.cfg['metric'].items():
+            self.cfg = configurator.configurator.device_cfg_extract(
+                'processing',
+                self.device)
+            for key, value in configurator.configurator.cfg['metric'].items():
                 self.cfg[key] = value
 
 

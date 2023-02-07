@@ -13,7 +13,7 @@ from numpy import nan
 # Own sources
 from controller import controller
 from metric import metric as mt
-import config
+import configurator
 
 
 # === Классы ===
@@ -81,8 +81,9 @@ class UI():
     def current_settings_set(self):
         if controller.last_file:
             device = controller.processor.device
-            prc_cfg = config.configurator.cfg['devices'][device]['processing']
-            mt_cfg = config.configurator.cfg['metric']
+            prc_cfg = configurator.configurator.cfg['devices']
+            prc_cfg = prc_cfg[device]['processing']
+            mt_cfg = configurator.configurator.cfg['metric']
             self.cfg = {
                 'invert': prc_cfg['invert'],
                 'timeShiftBox': prc_cfg['time_shift'],
@@ -241,7 +242,7 @@ class UI():
             st.write('In st', self.t_mt_factor)
             st.write(controller.processor.device)
             st.write('In cfg',
-                     config.configurator.cfg['metric']['t_mt_factor'])
+                     configurator.configurator.cfg['metric']['t_mt_factor'])
 
 
 # === Функции ===

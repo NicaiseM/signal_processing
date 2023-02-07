@@ -40,5 +40,5 @@
 *.mp4
 
 ### Частные настройки ###
-
-/test_working_dir
+/__dist
+/__test
