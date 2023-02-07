@@ -187,6 +187,8 @@ class Opener:
         Для Micsig из файла извлекается величина задержки, после чего
         подсчитывается настоящее время, т.к. Miqsig записывает время
         относительно опорной точки (см. руководство к осциллографу).
+        Порядок извлечения параметров важен, т.к. файл считывается
+        по строкам, включая пропущенные с помощью параметра skiprows.
         После определяется шаг времени и происходит переупаковка
         словаря data в двухмерный массив Numpy, где нулевой строкой
         становится время, первой (и второй, если есть второй канал) -
@@ -212,16 +214,16 @@ class Opener:
             for num, name in enumerate(names):
                 data[name] = df[name].values
             t_step = (data['t'][-1] - data['t'][0])/len(data['t'])
-            # !!! TODO Проверить необходимость добавления фиксированного шага
+            # TODO Проверить необходимость добавления фиксированного шага
 
         elif self.recorder_device == 'Micsig tBook':
             usecols = [3, 4, 10][:self.ch_num + 1]
+            delay = np.loadtxt(file, delimiter=',', dtype='str',
+                               skiprows=4, max_rows=1, usecols=1)
             df = pd.read_csv(file, index_col=False, names=names,
-                             skiprows=13, usecols=usecols)
+                             skiprows=8, usecols=usecols)
             for num, name in enumerate(names):
                 data[name] = df[name].values
-            delay = np.loadtxt(file, delimiter=',', dtype='str',
-                               skiprows=5, max_rows=1, usecols=1)
             delay = float(np.ndarray.item(delay).split(' ')[0])
             data['t'] = data['t'] - ((data['t'][-1] - data['t'][0])/2 - delay)
             t_step = (data['t'][-1] - data['t'][0])/len(data['t'])

@@ -87,7 +87,8 @@ class Plotter():
                          'C1-', label=ch2_label)
             ch2_ylabel = '; ' + ch2_ylabel
         else:
-            ch2_ylabel = ''
+            ch2_ylabel = '{}'
+            ch2_mt_factor = ['', '']
         self.ax.grid(True)
         self.ax.set_xlabel(t_xlabel.format(t_mt_factor[1]))
         self.ax.set_ylabel(ch1_ylabel.format(ch1_mt_factor[1])

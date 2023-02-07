@@ -87,5 +87,5 @@ class Controller():
 # === Обработка ===
 controller = Controller()
 if __name__ == '__main__':
-    file = './__misc/test_working_dir/rigol-new/csv/NewFile3.csv'
+    file = r"myFile.csv"
     controller.processing_start(file)

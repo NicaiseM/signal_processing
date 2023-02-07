@@ -67,10 +67,15 @@ class Processor():
         if self.cfg['moving_average_smoothing']:
             self.moving_average_smoothing(self.data,
                                           self.cfg['moving_average_window'])
-        self.plotter.plotting(self.data[0], self.data[1], self.data[2],
-                              mt[self.cfg['t_mt_factor']],
-                              mt[self.cfg['ch1_mt_factor']],
-                              mt[self.cfg['ch2_mt_factor']])
+        if self.data.shape[0] - 1 == 1:
+            self.plotter.plotting(self.data[0], self.data[1],
+                                  t_mt_factor=mt[self.cfg['t_mt_factor']],
+                                  ch1_mt_factor=mt[self.cfg['ch1_mt_factor']])
+        elif self.data.shape[0] - 1 == 2:
+            self.plotter.plotting(self.data[0], self.data[1], self.data[2],
+                                  t_mt_factor=mt[self.cfg['t_mt_factor']],
+                                  ch1_mt_factor=mt[self.cfg['ch1_mt_factor']],
+                                  ch2_mt_factor=mt[self.cfg['ch2_mt_factor']])
 
     def invert(self, data):
         """
@@ -219,6 +224,6 @@ class Processor():
 
 # === Обработка ===
 if __name__ == '__main__':
-    file = 'test_working_dir/rigol-new/csv/NewFile3.csv'
+    file = r"myFile.csv"
     processor = Processor()
     processor.file_processing(file)
