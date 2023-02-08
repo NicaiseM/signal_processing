@@ -12,7 +12,6 @@
 # Own sources
 import controller
 
-
 __author__      = "Polina Punina"
 __copyright__   = "Copyright 2022, Polina Punina"
 __credits__     = ["Polina Punina, Nikita Makarchuk"]

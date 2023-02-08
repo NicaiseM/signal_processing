@@ -36,7 +36,7 @@ class Processor():
 
         """
         self.opener = Opener()
-        self.plotter = Plotter()
+        self.plotter = Plotter(configurator.configurator.canvas['main'])
         self.device = None
 
     def data_updating(self, file):
@@ -50,7 +50,6 @@ class Processor():
                 self.device)
             for key, value in configurator.configurator.cfg['metric'].items():
                 self.cfg[key] = value
-
 
     def file_processing(self, *file):
         if not file:
@@ -223,7 +222,3 @@ class Processor():
 # === Функции ===
 
 # === Обработка ===
-if __name__ == '__main__':
-    file = r"myFile.csv"
-    processor = Processor()
-    processor.file_processing(file)
