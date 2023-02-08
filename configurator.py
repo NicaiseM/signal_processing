@@ -17,8 +17,8 @@ from abstract_classes import AbstractConfigurator
 class Configurator(AbstractConfigurator):
     """Класс формирования конфигурации."""
 
-    def __init__(self):
-        super().__init__('.', 'config_default.yml')
+    def __init__(self, cfg_subdir, default_file):
+        super().__init__(cfg_subdir, default_file)
 
     def device_cfg_extract(self, category, device=None):
         """
@@ -72,4 +72,4 @@ class Configurator(AbstractConfigurator):
 # === Функции ===
 
 # === Обработка ===
-configurator = Configurator()
+configurator = Configurator('./cfg', 'default.yml')
