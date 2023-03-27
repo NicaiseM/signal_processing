@@ -16,12 +16,13 @@ from streamlit.elements.file_uploader import UploadedFile
 # Own sources
 import configurator
 from exceptions import WrongCsvStructureError
+# В тексте нет, но, возможно, стоит добавить
+# from service_utilities import Str2FloatMixin
 
 
 # === Классы ===
-class Opener:
+class Opener():
     """Класс - импортер данных из csv-файлов."""
-
     def __init__(self):
         """
         Инициализация открывашки.
